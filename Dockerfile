@@ -4,8 +4,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 1. 필수 도구 설치
 RUN apt-get update && apt-get install -y cmake g++ libssl-dev zlib1g-dev wget git curl
 
-# 2. DPP 설치 (의존성 문제까지 한 번에 해결하는 마법의 명령어 추가)
-RUN wget https://github.com -O dpp.deb && \
+# 2. DPP 설치 (주소를 변수로 쪼개서 절대 안 잘리게 함)
+RUN URL_BASE="https://github.com" && \
+    URL_FILE="v10.0.35/libdpp-10.0.35-linux-x64.deb" && \
+    wget ${URL_BASE}/${URL_FILE} -O dpp.deb && \
     apt-get install -y ./dpp.deb && \
     rm dpp.deb
 
