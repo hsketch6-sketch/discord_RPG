@@ -4,9 +4,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 1. 필수 도구 설치
 RUN apt-get update && apt-get install -y cmake g++ libssl-dev zlib1g-dev wget git curl
 
-# 2. DPP 설치 (주소 직접 안 쓰고 명령어로 최신파일 찾아오기)
-RUN LATEST_URL=$(curl -s https://github.com | grep "browser_download_url.*-linux-x64.deb" | cut -d '"' -f 4) && \
-    wget $LATEST_URL -O dpp.deb && \
+# 2. 주소를 세 토막으로 나눠서 합치기 (절대 안 잘림)
+RUN P1="https://github.com" && \
+    P2="DPP/releases/download/v10.0.35/" && \
+    P3="libdpp-10.0.35-linux-x64.deb" && \
+    wget ${P1}${P2}${P3} -O dpp.deb && \
     apt-get install -y ./dpp.deb && \
     rm dpp.deb
 
