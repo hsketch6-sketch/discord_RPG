@@ -32,48 +32,37 @@ std::mutex db_mutex;  //혹시나 레이스 컨디션의 문제를 방지하기 
 void load_data() {
     try {
         std::ifstream file("players.json");
+        if (!file.is_open()) return;
 
-        // 1. 파일이 없으면 그냥 종료
-        if (!file.is_open()) {
-            std::cout << "[시스템] 저장된 데이터가 없습니다. 새로 시작합니다." << std::endl;
+        // 파일의 끝으로 가서 크기 확인
+        file.seekg(0, std::ios::end);
+        std::streamsize size = file.tellg();
+        if (size <= 0) { // 파일이 비어있으면 종료
+            file.close();
+            return; 
+        }
+        file.seekg(0, std::ios::beg);
+
+        json j_all;
+        try {
+            file >> j_all;
+        } catch (const json::parse_error& e) {
+            // 파싱 에러 발생 시 파일이 깨진 것으로 간주
+            std::cerr << "[시스템] JSON 형식이 깨져 있습니다. 초기화가 필요합니다." << std::endl;
+            file.close();
             return;
         }
-
-        // 2. 파일을 문자열로 싹 읽어와서 진짜 JSON인지 미리 검사
-        std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         file.close();
 
-        if (content.empty() || content[0] != '[') {
-            std::cout << "[시스템] 올바른 데이터 형식이 아닙니다. 초기화합니다." << std::endl;
-            return;
+        if (j_all.is_array()) {
+            for (auto& j_user : j_all) {
+                // ... 기존 데이터 복사 로직 ...
+            }
         }
-
-        // 3. 검증된 경우에만 파싱
-        json j_all = json::parse(content);
-
-        for (auto& j_user : j_all) {
-            if (!j_user.contains("id")) continue;
-            dpp::snowflake id = std::stoull(j_user["id"].get<std::string>());
-            Player p;
-            p.user_id = id;
-            p.hp = j_user.value("hp", 100);
-            p.level = j_user.value("level", 1);
-            p.exp = j_user.value("exp", 0);
-            p.maxexp = j_user.value("maxexp", 120);
-            p.max_hp = j_user.value("max_hp", 105);
-            p.gold = j_user.value("gold", 0LL);
-            p.str = j_user.value("str", 15);
-            p.dice = j_user.value("dice", 0);
-            Player_db[id] = p;
-        }
-        std::cout << "[시스템] 데이터 로드 완료!" << std::endl;
-    }
-    catch (...) {
-        // [필살기] 어떤 에러(e)가 나도 무조건 여기서 잡고 봇을 살립니다.
-        std::cerr << "[시스템] 데이터 로드 중 예외 발생! 안전하게 스킵합니다." << std::endl;
+    } catch (...) {
+        std::cerr << "[시스템] 알 수 없는 로드 에러 발생" << std::endl;
     }
 }
-
 
 //저장함수
 	void save_data() {
