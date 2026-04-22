@@ -1,4 +1,4 @@
-﻿#pragma execution_character_set("utf-8") 
+
 #include <string>
 #include <dpp/dpp.h> // dpp 라이브러리를 쓰게해준다
 #include <map> // std::map<dpp::snowflake, Player> player_db;를 쓰기위해 필요한 include이다.
@@ -167,7 +167,6 @@ void justdice(const dpp::slashcommand_t& event, Player& P) {
 
 int main() {
 	// 1. 초기 설정 (한글 깨짐 방지 및 난수 초기화)
-	system("chcp 65001");
 	srand(static_cast<unsigned int>(time(NULL)));
 
 dpp::cluster bot(std::getenv("BOT_TOKEN")); 
