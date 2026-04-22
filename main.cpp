@@ -34,10 +34,8 @@ void load_data() {
         std::ifstream file("players.json");
         if (!file.is_open()) return;
 
-        // 파일의 끝으로 가서 크기 확인
         file.seekg(0, std::ios::end);
-        std::streamsize size = file.tellg();
-        if (size <= 0) { // 파일이 비어있으면 종료
+        if (file.tellg() <= 0) { 
             file.close();
             return; 
         }
@@ -47,17 +45,32 @@ void load_data() {
         try {
             file >> j_all;
         } catch (const json::parse_error& e) {
-            // 파싱 에러 발생 시 파일이 깨진 것으로 간주
-            std::cerr << "[시스템] JSON 형식이 깨져 있습니다. 초기화가 필요합니다." << std::endl;
+            std::cerr << "[시스템] JSON 깨짐 감지: " << e.what() << std::endl;
             file.close();
             return;
         }
         file.close();
 
         if (j_all.is_array()) {
+            std::lock_guard<std::mutex> lock(db_mutex); // 데이터 넣을 때 잠금
             for (auto& j_user : j_all) {
-                // ... 기존 데이터 복사 로직 ...
+                if (!j_user.contains("id")) continue;
+                
+                dpp::snowflake id = std::stoull(j_user["id"].get<std::string>());
+                Player p;
+                p.user_id = id;
+                p.hp = j_user.value("hp", 100);
+                p.level = j_user.value("level", 1);
+                p.exp = j_user.value("exp", 0);
+                p.maxexp = j_user.value("maxexp", 120);
+                p.max_hp = j_user.value("max_hp", 105);
+                p.gold = j_user.value("gold", 0LL);
+                p.str = j_user.value("str", 15);
+                p.dice = j_user.value("dice", 0);
+                
+                Player_db[id] = p; // 메모리에 로드
             }
+            std::cout << "[시스템] " << Player_db.size() << "명의 유저 데이터를 로드했습니다." << std::endl;
         }
     } catch (...) {
         std::cerr << "[시스템] 알 수 없는 로드 에러 발생" << std::endl;
