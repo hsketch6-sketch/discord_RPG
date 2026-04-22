@@ -1,17 +1,18 @@
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y cmake g++ libssl-dev zlib1g-dev wget git
+# 1. 필수 도구 설치
+RUN apt-get update && apt-get install -y cmake g++ libssl-dev zlib1g-dev wget git curl
 
-# 주소를 3조각으로 나눠서 합치는 방식 (절대 안 잘림)
-RUN PART1="https://github.com" && \
-    PART2="v10.0.35/libdpp-10.0.35-linux-x64.deb" && \
-    FULL_URL="${PART1}${PART2}" && \
-    wget $FULL_URL -O dpp.deb && \
-    dpkg -i dpp.deb && \
+# 2. DPP 설치 (의존성 문제까지 한 번에 해결하는 마법의 명령어 추가)
+RUN wget https://github.com -O dpp.deb && \
+    apt-get install -y ./dpp.deb && \
     rm dpp.deb
 
+# 3. 코드 복사 및 컴파일
 WORKDIR /app
 COPY . .
 RUN g++ -std=c++17 main.cpp -o bot -ldpp
+
+# 4. 실행
 CMD ["./bot"]
