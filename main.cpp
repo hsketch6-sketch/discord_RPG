@@ -30,42 +30,52 @@ std::map<dpp::snowflake, Player> Player_db; //유저의 고유 Id를 찾아서 P
 std::mutex db_mutex;  //혹시나 레이스 컨디션의 문제를 방지하기 위해서
 //불러오는 함수
 	void load_data() {
-		std::ifstream file("players.json"); // json을 읽고
+    std::ifstream file("players.json");
 
-		if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof()) { // 파일이 닫혀있거나, 살짝 보니 EOF(end of file)이라면
-			return; // 돌려보낸다
-		}
+    // 1. 파일이 없거나 열 수 없으면 에러 내지 말고 조용히 종료 (매우 중요!)
+    if (!file.is_open()) {
+        std::cout << "[시스템] 저장된 데이터가 없습니다. 새로운 모험을 시작합니다!" << std::endl;
+        return;
+    }
 
-		try { // 시도해라
-			json j_all; // 만들고
-			file >> j_all; // 상자 안에 넣기
+    // 2. 파일이 비어있는지 확인 (더 안전한 방식)
+    if (file.peek() == std::ifstream::traits_type::eof()) {
+        std::cout << "[시스템] 데이터 파일이 비어있습니다." << std::endl;
+        file.close();
+        return;
+    }
 
-			for (auto& j_user : j_all) { //전체 유저 목록에서 유저 한명씩 꺼내서 반복하라
-				if (!j_user.contains("id")) continue; // id가 없다면 그냥 넘기기
+    try {
+        json j_all;
+        file >> j_all;
 
-				dpp::snowflake id = std::stoull(j_user["id"].get<std::string>()); // 디스코드 ID상자에 담기
+        for (auto& j_user : j_all) {
+            if (!j_user.contains("id")) continue;
 
-				Player p; //지역 변수
-				p.user_id = id;
-				p.hp = j_user.value("hp", 100);
-				p.level = j_user.value("level", 1);
-				p.exp = j_user.value("exp", 0);
-				p.maxexp = j_user.value("maxexp", 120);
-				p.max_hp = j_user.value("max_hp", 105);
-				p.gold = j_user.value("gold", 0);
-				p.str = j_user.value("str", 15);
-				p.dice = j_user.value("dice", 0); // 변수선언들
+            dpp::snowflake id = std::stoull(j_user["id"].get<std::string>());
+            Player p;
+            p.user_id = id;
+            p.hp = j_user.value("hp", 100);
+            p.level = j_user.value("level", 1);
+            p.exp = j_user.value("exp", 0);
+            p.maxexp = j_user.value("maxexp", 120);
+            p.max_hp = j_user.value("max_hp", 105);
+            p.gold = j_user.value("gold", 0LL);
+            p.str = j_user.value("str", 15);
+            p.dice = j_user.value("dice", 0);
 
-				Player_db[id] = p;
-			}
-			std::cout << "[시스템] 데이터 로드 완료!" << std::endl;
-		} // try 블록 끝
-		catch (const std::exception& e) { // catch 블록
-			std::cerr << "[오류] JSON 파싱 에러: " << e.what() << std::endl;
-		}
+            Player_db[id] = p;
+        }
+        std::cout << "[시스템] 데이터 로드 완료!" << std::endl;
+    }
+    catch (const std::exception& e) {
+        // [핵심] 에러가 나도 봇이 죽지 않고(terminate) 그냥 넘어가게 함
+        std::cerr << "[경고] 데이터 읽기 실패 (파일 손상 가능성): " << e.what() << std::endl;
+        std::cerr << "[시스템] 무시하고 봇을 실행합니다." << std::endl;
+    }
 
-		file.close(); // 파일닫기
-	}
+    file.close();
+}
 
 //저장함수
 	void save_data() {
