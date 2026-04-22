@@ -171,7 +171,7 @@ int main() {
 	srand(static_cast<unsigned int>(time(NULL)));
 
 	// 2. 봇 객체 생성 (토큰을 꼭 정확히 입력하세요!)
-	dpp::cluster bot("MTQ5MzU5NzQyNTI1OTExODc3NQ.GK_5EA.eHUh48PwN5PlXklTXJ4WGFh0CgfXLo-jri8e8o");
+	dpp::cluster bot("");
 
 	// 3. 로그 활성화 (에러 확인용)
 	bot.on_log(dpp::utility::cout_logger());
