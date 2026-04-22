@@ -116,7 +116,6 @@ void level_up_check(Player& P, const dpp::slashcommand_t& event) {
 }
 //정보 함수
 void handle_info(const dpp::slashcommand_t& event, Player&P) {
-	std::lock_guard<std::mutex> lock(db_mutex);
 
 	dpp::embed embed = dpp::embed() // 이쁜 UI
 		.set_color(dpp::colors::cyan)           //제목(강조되게)
