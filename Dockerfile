@@ -4,8 +4,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 1. 필수 도구 설치
 RUN apt-get update && apt-get install -y cmake g++ libssl-dev zlib1g-dev wget git curl
 
-# 2. 주소를 세 토막으로 나눠서 합치기 (절대 안 잘림)
-RUN P1="https://github.com" && \
+# 2. 주소 세 토막 (P1 경로 수정 완료)
+RUN P1="https://github.com/brainboxdotcc/" && \
     P2="DPP/releases/download/v10.0.35/" && \
     P3="libdpp-10.0.35-linux-x64.deb" && \
     wget ${P1}${P2}${P3} -O dpp.deb && \
