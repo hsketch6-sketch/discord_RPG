@@ -175,7 +175,6 @@ void justdice(const dpp::slashcommand_t& event, Player& P) {
 		
 
 int main() {
-	// 1. 초기 설정 (한글 깨짐 방지 및 난수 초기화)
 	srand(static_cast<unsigned int>(time(NULL)));
 
 dpp::cluster bot(std::getenv("BOT_TOKEN")); 
