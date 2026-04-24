@@ -180,7 +180,7 @@ void justdice(const dpp::slashcommand_t& event, Player& P) {
 int main() {
 	srand(static_cast<unsigned int>(time(NULL)));
 
-dpp::cluster bot(std::getenv("BOT_TOKEN")); 
+dpp::cluster bot("MTQ5MzU5NzQyNTI1OTExODc3NQ.GHPD2W.GBIT6GuDi1YuSd1y6T7xm2q6PDwLt2Sa2Fuehk"); 
 
 
 	// 3. 로그 활성화 (에러 확인용)
