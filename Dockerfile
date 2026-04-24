@@ -15,7 +15,8 @@ RUN P1="https://github.com/brainboxdotcc/" && \
 # 3. 코드 복사 및 컴파일
 WORKDIR /app
 COPY . .
-RUN g++ -std=c++17 main.cpp -o bot -ldpp
+RUN echo "[]" > players.json
 
+RUN g++ -std=c++17 main.cpp -o bot -ldpp
 # 4. 실행
 CMD ["./bot"]
