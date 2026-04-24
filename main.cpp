@@ -32,8 +32,11 @@ std::mutex db_mutex;  //혹시나 레이스 컨디션의 문제를 방지하기 
 void load_data() {
     try {
         std::ifstream file("players.json");
-        if (!file.is_open()) return;
-
+        if (!file.is_open())  {
+						std::cout << "[처음 시작한 플레이어 입니다]" << std::endl;
+			file.close();
+			return;
+		}
         file.seekg(0, std::ios::end);
         if (file.tellg() <= 0) { 
             file.close();
