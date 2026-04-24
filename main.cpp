@@ -180,7 +180,7 @@ void justdice(const dpp::slashcommand_t& event, Player& P) {
 int main() {
 	srand(static_cast<unsigned int>(time(NULL)));
 
-dpp::cluster bot(std::getenv("BOT_TOKEN")); 
+dpp::cluster bot(std::getenv("BOT_TOKEN"), dpp::i_default_intents | dpp::i_message_content);
 
 
 
