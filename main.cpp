@@ -181,7 +181,7 @@ int main() {
 	srand(static_cast<unsigned int>(time(NULL)));
 
 dpp::cluster bot(std::getenv("BOT_TOKEN"), dpp::i_default_intents | dpp::i_message_content);
-
+//don't see my TOKEN!
 
 
 	// 3. 로그 활성화 (에러 확인용)
